@@ -1,1 +1,10 @@
-{"name": "PRINTÊ Manager", "short_name": "PRINTÊ", "start_url": "./index.html", "display": "standalone", "background_color": "#f5f5f5", "theme_color": "#111", "lang": "pt-BR"}
+{
+  "name": "PRINTÊ Manager",
+  "short_name": "PRINTÊ",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f4f6",
+  "theme_color": "#111111",
+  "lang": "pt-BR"
+}

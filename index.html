@@ -1,58 +1,187 @@
-<!doctype html><html lang="pt-BR"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111"><meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="PRINTÊ Manager"><title>PRINTÊ Manager</title>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PRINTÊ Manager">
+<link rel="manifest" href="manifest.json">
+<title>PRINTÊ Manager</title>
 <style>
-:root{--bg:#f5f5f5;--card:#fff;--text:#161616;--muted:#707070;--accent:#ff6b8a;--line:#e7e7e7}*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-.app{max-width:900px;margin:auto;min-height:100vh;padding-bottom:60px}header{padding:24px 18px;background:#111;color:#fff}
-.brand{font-size:25px;font-weight:800}.brand span{color:var(--accent)}header small{color:#bbb}
-nav{display:flex;gap:7px;padding:9px;background:#fff;position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line);overflow:auto}
-nav button{border:0;background:#eee;padding:10px 12px;border-radius:12px;white-space:nowrap;font-weight:700}nav button.active{background:#111;color:#fff}
-main{padding:16px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:15px}
-.metric{font-size:23px;font-weight:800;margin-top:4px}.muted{color:var(--muted);font-size:13px}
-h2{font-size:21px}h3{margin:0 0 12px}label{display:block;font-size:13px;font-weight:700;margin:11px 0 5px}
-input,select{width:100%;padding:11px;border:1px solid #d7d7d7;border-radius:10px;background:#fff;font-size:16px}
-.row{display:flex;gap:9px}.row>*{flex:1}.primary{border:0;background:#111;color:#fff;padding:12px 15px;border-radius:11px;font-weight:800;margin-top:14px}
-.price{font-size:28px;font-weight:900;margin-top:7px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line)}
-th{font-size:10px;text-transform:uppercase;color:#777}.hidden{display:none}
-@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}}
-</style></head><body><div class="app">
-<header><div class="brand">PRINT<span>Ê</span> Manager</div><small>Precificação • Produtos • Vendas • Estoque</small></header>
-<nav id="nav"><button class="active" data-tab="inicio">Início</button><button data-tab="produto">Novo produto</button><button data-tab="catalogo">Catálogo</button><button data-tab="vendas">Vendas</button><button data-tab="estoque">Estoque</button><button data-tab="config">Config.</button></nav>
+:root{--bg:#f4f4f6;--card:#fff;--ink:#141414;--muted:#747474;--line:#e5e5e7;--accent:#ff6b8a;--green:#11834b}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.app{max-width:980px;margin:auto;min-height:100vh;padding-bottom:90px}
+header{background:#111;color:#fff;padding:calc(18px + env(safe-area-inset-top)) 18px 18px}
+.logoText{font-size:26px;font-weight:900;letter-spacing:.3px}.logoText span{color:var(--accent)}header small{color:#bdbdbd}
+nav{position:sticky;top:0;z-index:10;display:flex;gap:7px;overflow:auto;background:#fff;padding:9px;border-bottom:1px solid var(--line)}
+nav button{border:0;background:#f0f0f0;color:#222;border-radius:12px;padding:10px 13px;font-weight:800;white-space:nowrap}
+nav button.active{background:#111;color:#fff}
+main{padding:16px}.screen.hidden{display:none}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:12px}
+h2{font-size:22px;margin:5px 0 14px}h3{margin:0 0 12px}.muted{font-size:13px;color:var(--muted)}
+.metric{font-size:23px;font-weight:900;margin-top:5px}.big{font-size:30px;font-weight:950}
+label{display:block;font-size:13px;font-weight:800;margin:11px 0 5px}
+input,select{width:100%;font-size:16px;padding:12px;border:1px solid #d4d4d8;border-radius:11px;background:#fff;color:#111}
+.row{display:flex;gap:10px}.row>*{flex:1}
+button.primary{width:100%;margin-top:14px;border:0;border-radius:12px;background:#111;color:#fff;padding:13px 15px;font-size:15px;font-weight:900}
+button.ghost{border:1px solid #d1d1d1;background:#fff;padding:10px 12px;border-radius:11px;font-weight:800}
+.priceGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}
+.priceBox{background:#f7f7f8;border-radius:14px;padding:12px}.priceBox strong{display:block;font-size:20px;margin-top:4px}
+.priceBox.highlight{background:#111;color:#fff}.priceBox.highlight .muted{color:#bbb}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:10px;color:#777;text-transform:uppercase}.scroll{overflow:auto}
+.tag{display:inline-block;background:#eee;border-radius:99px;padding:4px 8px;font-size:11px;font-weight:800}
+.ok{color:var(--green);font-weight:800}.note{padding:10px;border-radius:12px;background:#fafafa;border:1px solid var(--line);font-size:12px;color:#666}
+.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}.priceGrid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logoText">PRINT<span>Ê</span> Manager</div><small>Precificação • Catálogo • Vendas • Estoque</small></header>
+<nav id="nav">
+<button data-screen="inicio" class="active">Início</button>
+<button data-screen="produto">Novo produto</button>
+<button data-screen="catalogo">Catálogo</button>
+<button data-screen="vendas">Vendas</button>
+<button data-screen="estoque">Estoque</button>
+<button data-screen="config">Config.</button>
+</nav>
 <main>
-<section id="inicio"><h2>Painel</h2><div class="grid">
-<div class="card"><div class="muted">Produtos</div><div id="mp" class="metric">0</div></div><div class="card"><div class="muted">Estoque</div><div id="me" class="metric">0</div></div><div class="card"><div class="muted">Faturamento</div><div id="mf" class="metric">R$ 0,00</div></div><div class="card"><div class="muted">Lucro</div><div id="ml" class="metric">R$ 0,00</div></div></div>
-<div class="card" style="margin-top:12px"><h3>Precificação rápida</h3><div class="row"><div><label>Peso (g)</label><input id="qp" type="number" step=".01"></div><div><label>Impressão (min)</label><input id="qt" type="number"></div></div>
-<div class="row"><div><label>Acabamento (min)</label><input id="qa" type="number" value="3"></div><div><label>Acessórios (R$)</label><input id="qx" type="number" step=".01" value="0"></div></div>
-<label>Modalidade</label><select id="qtipo"><option value="direta">Venda direta</option><option value="atacado">Atacado</option><option value="consig">Consignação</option></select>
-<div id="qpreco" class="price">R$ 0,00</div><button class="primary" onclick="quick()">Calcular preço</button></div></section>
 
-<section id="produto" class="hidden"><h2>Novo produto</h2><div class="card"><label>Nome</label><input id="pn" placeholder="Ex.: Chaveiro Akatsuki">
+<section id="inicio" class="screen">
+<h2>Precificação rápida</h2>
+<div class="card">
+<div class="row">
+<div><label>Peso (g)</label><input id="qp" type="number" step=".01" placeholder="Ex.: 10"></div>
+<div><label>Impressão (min)</label><input id="qt" type="number" placeholder="Ex.: 45"></div>
+</div>
+<div class="row">
+<div><label>Acabamento (min)</label><input id="qa" type="number" value="3"></div>
+<div><label>Acessórios (R$)</label><input id="qx" type="number" step=".01" value="0"></div>
+</div>
+<button class="primary" onclick="quick()">CALCULAR</button>
+<div id="quickResult" class="priceGrid" style="display:none">
+<div class="priceBox"><span class="muted">Custo</span><strong id="qc">R$ 0,00</strong></div>
+<div class="priceBox highlight"><span class="muted">Venda direta</span><strong id="qd">R$ 0,00</strong></div>
+<div class="priceBox"><span class="muted">Atacado</span><strong id="qaPrice">R$ 0,00</strong></div>
+<div class="priceBox"><span class="muted">Consignação</span><strong id="qs">R$ 0,00</strong></div>
+</div>
+<p class="note">Os cálculos usam os valores definidos em Configurações. O preço recomendado pode ser ajustado comercialmente para R$ 5,00, R$ 9,90, R$ 10,00 etc.</p>
+</div>
+<h2>Painel</h2>
+<div class="grid">
+<div class="card"><div class="muted">Produtos</div><div id="mp" class="metric">0</div></div>
+<div class="card"><div class="muted">Unidades em estoque</div><div id="me" class="metric">0</div></div>
+<div class="card"><div class="muted">Faturamento</div><div id="mf" class="metric">R$ 0,00</div></div>
+<div class="card"><div class="muted">Lucro estimado</div><div id="ml" class="metric">R$ 0,00</div></div>
+</div>
+</section>
+
+<section id="produto" class="screen hidden">
+<h2>Novo produto</h2><div class="card">
+<label>Nome do produto</label><input id="pn" placeholder="Ex.: Chaveiro Akatsuki">
 <div class="row"><div><label>Peso (g)</label><input id="pp" type="number" step=".01"></div><div><label>Impressão (min)</label><input id="pt" type="number"></div></div>
 <div class="row"><div><label>Acabamento (min)</label><input id="pa" type="number" value="3"></div><div><label>Acessórios (R$)</label><input id="px" type="number" step=".01" value="0"></div></div>
-<label>Estoque inicial</label><input id="pe" type="number" value="0"><button class="primary" onclick="add()">Salvar produto</button></div></section>
+<label>Estoque inicial</label><input id="pe" type="number" value="0">
+<button class="primary" onclick="addProduct()">SALVAR PRODUTO</button>
+</div></section>
 
-<section id="catalogo" class="hidden"><h2>Catálogo</h2><div class="card"><table><thead><tr><th>Produto</th><th>Custo</th><th>Direta</th><th>Consig.</th><th>Estoque</th></tr></thead><tbody id="cat"></tbody></table></div></section>
-<section id="vendas" class="hidden"><h2>Registrar venda</h2><div class="card"><label>Produto</label><select id="vp"></select><div class="row"><div><label>Quantidade</label><input id="vq" type="number" value="1" min="1"></div><div><label>Modalidade</label><select id="vt"><option value="direta">Direta</option><option value="atacado">Atacado</option><option value="consig">Consignação</option></select></div></div><button class="primary" onclick="sale()">Registrar venda</button></div>
-<div class="card" style="margin-top:12px"><h3>Histórico</h3><table><thead><tr><th>Data</th><th>Produto</th><th>Qtd.</th><th>Total</th><th>Lucro</th></tr></thead><tbody id="hist"></tbody></table></div></section>
-<section id="estoque" class="hidden"><h2>Estoque</h2><div class="card"><table><thead><tr><th>Produto</th><th>Qtd.</th><th>Custo/un.</th><th>Valor</th></tr></thead><tbody id="stk"></tbody></table></div></section>
-<section id="config" class="hidden"><h2>Configurações</h2><div class="card" id="cfg"></div></section>
+<section id="catalogo" class="screen hidden"><h2>Catálogo</h2>
+<div class="card scroll"><table><thead><tr><th>Produto</th><th>Custo</th><th>Direta</th><th>Atacado</th><th>Consig.</th><th>Estoque</th></tr></thead><tbody id="cat"></tbody></table></div>
+</section>
+
+<section id="vendas" class="screen hidden"><h2>Registrar venda</h2>
+<div class="card">
+<label>Produto</label><select id="vp"></select>
+<div class="row"><div><label>Quantidade</label><input id="vq" type="number" value="1" min="1"></div><div><label>Modalidade</label><select id="vt"><option value="direta">Venda direta</option><option value="atacado">Atacado</option><option value="consig">Consignação</option></select></div></div>
+<button class="primary" onclick="addSale()">REGISTRAR VENDA</button>
+</div>
+<div class="card scroll"><h3>Histórico</h3><table><thead><tr><th>Data</th><th>Produto</th><th>Qtd.</th><th>Total</th><th>Lucro</th></tr></thead><tbody id="hist"></tbody></table></div>
+</section>
+
+<section id="estoque" class="screen hidden"><h2>Estoque</h2>
+<div class="card scroll"><table><thead><tr><th>Produto</th><th>Qtd.</th><th>Custo/un.</th><th>Valor em custo</th></tr></thead><tbody id="stk"></tbody></table></div>
+</section>
+
+<section id="config" class="screen hidden"><h2>Configurações</h2>
+<div class="card">
+<div class="row"><div><label>Filamento (R$/kg)</label><input id="cf" type="number" step=".01"></div><div><label>A1 (W)</label><input id="cw" type="number"></div></div>
+<div class="row"><div><label>Energia (R$/kWh)</label><input id="ce" type="number" step=".001"></div><div><label>Valor A1 (R$)</label><input id="ca" type="number" step=".01"></div></div>
+<div class="row"><div><label>Vida econômica (h)</label><input id="cv" type="number"></div><div><label>Mão de obra (R$/h)</label><input id="cm" type="number" step=".01"></div></div>
+<div class="row"><div><label>Manutenção (%)</label><input id="cman" type="number" step=".1"></div><div><label>Comissão consignação (%)</label><input id="cc" type="number" step=".1"></div></div>
+<label>Margem alvo (%)</label><input id="cma" type="number" step=".1">
+<button class="primary" onclick="saveConfig()">SALVAR CONFIGURAÇÕES</button>
+<p class="note">Padrão PRINTÊ: filamento R$ 130/kg, A1 350 W, energia R$ 1,061/kWh, A1 R$ 5.100, vida 3.000 h, mão de obra R$ 20/h, manutenção 5%, consignação 30% e margem 40%.</p>
+</div></section>
 </main></div>
+
 <script>
-const K="printe_manager_v1",M=v=>new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v||0);
-let db=JSON.parse(localStorage.getItem(K)||"null")||{c:{fil:130,w:350,e:1.061,a1:5100,vida:3000,mao:20,man:5,com:30,marg:40},p:[],s:[]};
-function save(){localStorage.setItem(K,JSON.stringify(db));render()}
-function cost(p){let c=db.c,dep=c.a1/c.vida;let direct=p.peso*c.fil/1000+p.tempo/60*(c.w/1000)*c.e+p.tempo/60*dep+(p.acc||0);return (direct+p.acab/60*c.mao)*(1+c.man/100)}
-function price(p,t){let c=db.c,x=cost(p);if(t=="consig")return x/(1-c.com/100-c.marg/100);if(t=="atacado")return x/(1-.15-c.marg/100);return x/(1-c.marg/100)}
-function quick(){let p={peso:+qp.value,tempo:+qt.value,acab:+qa.value,acc:+qx.value};qpreco.textContent=M(price(p,qtipo.value))}
-function add(){let n=pn.value.trim();if(!n)return alert("Informe o nome.");let p={id:Date.now(),name:n,peso:+pp.value,tempo:+pt.value,acab:+pa.value||0,acc:+px.value||0,estoque:+pe.value||0};db.p.push(p);save();pn.value="";alert("Produto salvo.")}
-function sale(){let p=db.p.find(x=>x.id==vp.value),q=Math.max(1,+vq.value||1),t=vt.value;if(!p)return;if(p.estoque<q)return alert("Estoque insuficiente.");let u=price(p,t),com=t=="consig"?db.c.com/100:0,profit=(u*(1-com)-cost(p))*q;p.estoque-=q;db.s.unshift({d:new Date().toLocaleDateString("pt-BR"),n:p.name,q,total:u*q,l:profit});save()}
-function cfg(){let c=db.c;document.getElementById("cfg").innerHTML=[["Filamento (R$/kg)","fil",c.fil],["A1 (W)","w",c.w],["Energia (R$/kWh)","e",c.e],["A1 (R$)","a1",c.a1],["Vida econômica (h)","vida",c.vida],["Mão de obra (R$/h)","mao",c.mao],["Manutenção (%)","man",c.man],["Comissão (%)","com",c.com],["Margem alvo (%)","marg",c.marg]].map(x=>`<label>${x[0]}</label><input id="c_${x[1]}" type="number" step=".001" value="${x[2]}">`).join("")+'<button class="primary" onclick="saveCfg()">Salvar configurações</button>'}
-function saveCfg(){let c={};["fil","w","e","a1","vida","mao","man","com","marg"].forEach(k=>c[k]=+document.getElementById("c_"+k).value);db.c=c;save();alert("Configurações salvas.")}
-function render(){cfg();mp.textContent=db.p.length;me.textContent=db.p.reduce((a,p)=>a+p.estoque,0);mf.textContent=M(db.s.reduce((a,x)=>a+x.total,0));ml.textContent=M(db.s.reduce((a,x)=>a+x.l,0));
-cat.innerHTML=db.p.map(p=>`<tr><td>${p.name}</td><td>${M(cost(p))}</td><td>${M(price(p,"direta"))}</td><td>${M(price(p,"consig"))}</td><td>${p.estoque}</td></tr>`).join("")||'<tr><td colspan="5">Nenhum produto.</td></tr>';
-vp.innerHTML=db.p.map(p=>`<option value="${p.id}">${p.name}</option>`).join("");hist.innerHTML=db.s.map(s=>`<tr><td>${s.d}</td><td>${s.n}</td><td>${s.q}</td><td>${M(s.total)}</td><td>${M(s.l)}</td></tr>`).join("")||'<tr><td colspan="5">Nenhuma venda.</td></tr>';
-stk.innerHTML=db.p.map(p=>`<tr><td>${p.name}</td><td>${p.estoque}</td><td>${M(cost(p))}</td><td>${M(cost(p)*p.estoque)}</td></tr>`).join("")||'<tr><td colspan="4">Nenhum produto.</td></tr>'}
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));document.getElementById(b.dataset.tab).classList.remove("hidden");b.classList.add("active")});render();
-</script></body></html>
+const KEY="printe_manager_v2";
+const money=v=>new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(v)||0);
+let db=JSON.parse(localStorage.getItem(KEY)||"null")||{
+c:{fil:130,w:350,e:1.061,a1:5100,vida:3000,mao:20,man:5,com:30,marg:40,atacadoCom:15},
+p:[],s:[]
+};
+function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
+function cost(p){
+ const c=db.c, dep=c.a1/c.vida;
+ const direct=p.peso*c.fil/1000+(p.tempo/60)*(c.w/1000)*c.e+(p.tempo/60)*dep+(p.acc||0);
+ const labor=(p.acab||0)/60*c.mao;
+ return (direct+labor)*(1+c.man/100);
+}
+function prices(p){
+ const x=cost(p), c=db.c;
+ return {
+  direta:x/(1-c.marg/100),
+  atacado:x/(1-c.atacadoCom/100-c.marg/100),
+  consig:x/(1-c.com/100-c.marg/100)
+ };
+}
+function quick(){
+ const p={peso:+qp.value||0,tempo:+qt.value||0,acab:+qa.value||0,acc:+qx.value||0};
+ if(!p.peso||!p.tempo){alert("Informe peso e tempo de impressão.");return}
+ const x=cost(p), z=prices(p);
+ qc.textContent=money(x);qd.textContent=money(z.direta);qaPrice.textContent=money(z.atacado);qs.textContent=money(z.consig);
+ quickResult.style.display="grid";
+}
+function addProduct(){
+ const name=pn.value.trim(), p={id:Date.now(),name,peso:+pp.value||0,tempo:+pt.value||0,acab:+pa.value||0,acc:+px.value||0,estoque:+pe.value||0};
+ if(!name||!p.peso||!p.tempo){alert("Informe nome, peso e tempo.");return}
+ db.p.push(p);save();["pn","pp","pt","pa","px"].forEach(id=>$(id).value=id==="pa"?3:id==="px"?0:"");pe.value=0;alert("Produto salvo.");
+}
+function addSale(){
+ const p=db.p.find(x=>String(x.id)===String(vp.value)); if(!p)return;
+ const q=Math.max(1,+vq.value||1), type=vt.value;
+ if(p.estoque<q){alert("Estoque insuficiente.");return}
+ const z=prices(p), unit=z[type==="consig"?"consig":type==="atacado"?"atacado":"direta"];
+ const commission=type==="consig"?db.c.com/100:type==="atacado"?db.c.atacadoCom/100:0;
+ const profit=(unit*(1-commission)-cost(p))*q;
+ p.estoque-=q;db.s.unshift({d:new Date().toLocaleDateString("pt-BR"),n:p.name,q,total:unit*q,l:profit});save();alert("Venda registrada.");
+}
+function loadConfig(){
+ const c=db.c;
+ cf.value=c.fil;cw.value=c.w;ce.value=c.e;ca.value=c.a1;cv.value=c.vida;cm.value=c.mao;cman.value=c.man;cc.value=c.com;cma.value=c.marg;
+}
+function saveConfig(){
+ db.c={fil:+cf.value,w:+cw.value,e:+ce.value,a1:+ca.value,vida:+cv.value,mao:+cm.value,man:+cman.value,com:+cc.value,marg:+cma.value,atacadoCom:db.c.atacadoCom||15};
+ db.p.forEach(p=>{p.custo=cost(p)});save();alert("Configurações salvas.");
+}
+function $(id){return document.getElementById(id)}
+function render(){
+ loadConfig();
+ mp.textContent=db.p.length;
+ me.textContent=db.p.reduce((a,p)=>a+p.estoque,0);
+ mf.textContent=money(db.s.reduce((a,s)=>a+s.total,0));
+ ml.textContent=money(db.s.reduce((a,s)=>a+s.l,0));
+ cat.innerHTML=db.p.map(p=>{let z=prices(p);return `<tr><td><b>${p.name}</b><br><span class="tag">${p.peso} g • ${p.tempo} min</span></td><td>${money(cost(p))}</td><td>${money(z.direta)}</td><td>${money(z.atacado)}</td><td>${money(z.consig)}</td><td>${p.estoque}</td></tr>`}).join("")||'<tr><td colspan="6">Nenhum produto cadastrado.</td></tr>';
+ vp.innerHTML=db.p.map(p=>`<option value="${p.id}">${p.name}</option>`).join("");
+ hist.innerHTML=db.s.map(s=>`<tr><td>${s.d}</td><td>${s.n}</td><td>${s.q}</td><td>${money(s.total)}</td><td class="ok">${money(s.l)}</td></tr>`).join("")||'<tr><td colspan="5">Nenhuma venda registrada.</td></tr>';
+ stk.innerHTML=db.p.map(p=>`<tr><td>${p.name}</td><td>${p.estoque}</td><td>${money(cost(p))}</td><td>${money(cost(p)*p.estoque)}</td></tr>`).join("")||'<tr><td colspan="4">Nenhum produto.</td></tr>';
+}
+document.querySelectorAll("#nav button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden"));document.querySelectorAll("#nav button").forEach(x=>x.classList.remove("active"));$(b.dataset.screen).classList.remove("hidden");b.classList.add("active")}));
+render();
+</script>
+</body></html>
