@@ -41,7 +41,7 @@ th{font-size:10px;text-transform:uppercase;color:#777}.scroll{overflow:auto}.tag
 <nav id="nav">
 <button class="active" data-screen="inicio">Início</button><button data-screen="produto">Novo produto</button>
 <button data-screen="catalogo">Catálogo</button><button data-screen="vendas">Vendas</button><button data-screen="estoque">Estoque</button>
-<button data-screen="lojas">Lojas</button><button data-screen="relatorios">Relatórios</button><button data-screen="config">Config.</button>
+<button data-screen="lojas">Lojas</button><button data-screen="relatorios">Relatórios</button><button data-screen="config">Config.</button><button data-screen="nuvem">☁️ Nuvem</button>
 </nav>
 <main>
 
@@ -107,6 +107,22 @@ th{font-size:10px;text-transform:uppercase;color:#777}.scroll{overflow:auto}.tag
 <div class="card"><h3>Backup e exportação</h3><div class="actions"><button class="secondary" onclick="exportJSON()">Exportar backup</button><button class="secondary" onclick="exportCSV()">Exportar vendas CSV</button><button class="secondary" onclick="document.getElementById('importFile').click()">Importar backup</button><input id="importFile" type="file" accept=".json" style="display:none" onchange="importJSON(event)"></div><p class="note">Faça backups regularmente. Os dados desta versão ficam armazenados localmente no navegador/aparelho.</p></div>
 </section>
 
+
+<section id="nuvem" class="screen hidden"><h2>☁️ Sincronização na nuvem</h2>
+<div class="card">
+<h3>Banco de dados</h3>
+<p class="muted">Conecte o PRINTÊ Manager ao Supabase para sincronizar produtos, estoque, vendas e lojas entre celular e computador. As credenciais ficam neste aparelho.</p>
+<label>Supabase Project URL</label><input id="suUrl" placeholder="https://seu-projeto.supabase.co">
+<label>Supabase Anon Key</label><textarea id="suKey" placeholder="eyJ..."></textarea>
+<div class="actions"><button class="secondary" onclick="saveSupabase()">Salvar conexão</button><button class="secondary" onclick="testSupabase()">Testar conexão</button><button class="primary" style="width:auto" onclick="syncCloud()">☁️ Sincronizar agora</button></div>
+<p id="cloudStatus" class="note">Ainda não configurado.</p>
+</div>
+<div class="card"><h3>Como ativar</h3>
+<ol class="muted"><li>Crie um projeto gratuito no Supabase.</li><li>Crie as tabelas usando o SQL fornecido no arquivo <b>SUPABASE_SETUP.sql</b> desta versão.</li><li>Em Project Settings → API, copie a URL e a chave <b>anon/public</b>.</li><li>Cole aqui e toque em “Salvar conexão”.</li></ol>
+<p class="note">O app continua funcionando offline. A nuvem entra como sincronização, não como substituição do armazenamento local.</p>
+</div>
+</section>
+
 <section id="config" class="screen hidden"><h2>Configurações</h2><div class="card">
 <div class="row"><div><label>Filamento (R$/kg)</label><input id="cf" type="number" step=".01"></div><div><label>Consumo A1 (W)</label><input id="cw" type="number"></div></div>
 <div class="row"><div><label>Energia (R$/kWh)</label><input id="ce" type="number" step=".001"></div><div><label>Valor da A1 (R$)</label><input id="ca" type="number" step=".01"></div></div>
@@ -147,13 +163,13 @@ function saveQuickProduct(){
  const name=$("qn").value.trim();if(!name){alert("Informe o nome do produto.");return}
  const p={id:Date.now(),name,peso:+$("qp").value||0,tempo:+$("qt").value||0,acab:+$("qa").value||0,acc:+$("qx").value||0,estoque:1,sku:"",obs:""};
  if(!p.peso||!p.tempo){alert("Informe peso e tempo de impressão.");return}
- db.p.push(p);db.m.unshift({date:new Date().toLocaleString("pt-BR"),pid:p.id,type:"entrada",q:1,reason:"Cadastro/estoque inicial"});
+ db.p.push(p);db.m.unshift({id:Date.now()+Math.random(),date:new Date().toLocaleString("pt-BR"),pid:p.id,type:"entrada",q:1,reason:"Cadastro/estoque inicial"});
  save();$("qn").value="";alert("Produto salvo com 1 unidade em estoque.");
 }
 function addProduct(){
  const p={id:Date.now(),name:$("pn").value.trim(),peso:+$("pp").value||0,tempo:+$("pt").value||0,acab:+$("pa").value||0,acc:+$("px").value||0,estoque:+$("pe").value||0,sku:$("psku").value.trim(),obs:$("pobs").value.trim()};
  if(!p.name||!p.peso||!p.tempo){alert("Informe nome, peso e tempo.");return}
- db.p.push(p);if(p.estoque>0)db.m.unshift({date:new Date().toLocaleString("pt-BR"),pid:p.id,type:"entrada",q:p.estoque,reason:"Estoque inicial"});
+ db.p.push(p);if(p.estoque>0)db.m.unshift({id:Date.now()+Math.random(),date:new Date().toLocaleString("pt-BR"),pid:p.id,type:"entrada",q:p.estoque,reason:"Estoque inicial"});
  save();["pn","pp","pt","psku","pobs"].forEach(id=>$(id).value="");$("pa").value=3;$("px").value=0;$("pe").value=0;alert("Produto salvo.");
 }
 function removeProduct(id){
@@ -171,7 +187,7 @@ function moveStock(){
  const q=Math.max(1,+$("sq").value||0),type=$("st").value,reason=$("sm").value.trim()||"Ajuste";
  if(type==="saida"&&p.estoque<q){alert("Estoque insuficiente.");return}
  p.estoque+=type==="entrada"?q:-q;
- db.m.unshift({date:new Date().toLocaleString("pt-BR"),pid:p.id,type,q,reason});save();$("sm").value="";
+ db.m.unshift({id:Date.now()+Math.random(),date:new Date().toLocaleString("pt-BR"),pid:p.id,type,q,reason});save();$("sm").value="";
 }
 function addSale(){
  const p=db.p.find(x=>String(x.id)===String($("vp").value));if(!p)return;
@@ -181,8 +197,8 @@ function addSale(){
  const commission=type==="consig"?db.c.com/100:type==="atacado"?db.c.atacadoCom/100:0;
  const profit=(unit*(1-commission)-cost(p))*q;
  p.estoque-=q;
- db.s.unshift({date:new Date().toLocaleString("pt-BR"),pid:p.id,name:p.name,q,total:unit*q,lucro:profit,type,store});
- db.m.unshift({date:new Date().toLocaleString("pt-BR"),pid:p.id,type:"saida",q,reason:"Venda "+type+(store?" - loja":"")});
+ db.s.unshift({id:Date.now(),date:new Date().toLocaleString("pt-BR"),pid:p.id,name:p.name,q,total:unit*q,lucro:profit,type,store});
+ db.m.unshift({id:Date.now()+Math.random(),date:new Date().toLocaleString("pt-BR"),pid:p.id,type:"saida",q,reason:"Venda "+type+(store?" - loja":"")});
  save();alert("Venda registrada.");
 }
 function addStore(){
@@ -233,8 +249,42 @@ function renderReports(){
  $("rProfit").textContent=money(ms.reduce((a,s)=>a+s.lucro,0));
  $("rUnits").textContent=ms.reduce((a,s)=>a+s.q,0);
 }
+
+let cloud=JSON.parse(localStorage.getItem("printe_supabase")||"{}");
+function renderCloud(){ $("suUrl").value=cloud.url||""; $("suKey").value=cloud.key||""; $("cloudStatus").textContent=cloud.url?"Conexão configurada. Toque em Testar conexão.":"Ainda não configurado."; }
+function saveSupabase(){cloud={url:$("suUrl").value.trim().replace(/\/$/,""),key:$("suKey").value.trim()};localStorage.setItem("printe_supabase",JSON.stringify(cloud));renderCloud();alert("Configuração da nuvem salva neste aparelho.");}
+async function sbFetch(path,opts={}){
+ if(!cloud.url||!cloud.key) throw Error("Configure o Supabase primeiro.");
+ const r=await fetch(cloud.url+"/rest/v1/"+path,{...opts,headers:{apikey:cloud.key,Authorization:"Bearer "+cloud.key,"Content-Type":"application/json",...(opts.headers||{})}});
+ if(!r.ok) throw Error(await r.text()); return r.status===204?null:r.json();
+}
+async function testSupabase(){try{await sbFetch("printe_products?select=id&limit=1");$("cloudStatus").textContent="✅ Conexão com a nuvem funcionando."; }catch(e){$("cloudStatus").textContent="❌ Falha: "+e.message.slice(0,180);}}
+async function syncCloud(){
+ try{
+  if(!cloud.url||!cloud.key){alert("Configure a conexão da nuvem primeiro.");return}
+  $("cloudStatus").textContent="⏳ Sincronizando...";
+  const remoteP=await sbFetch("printe_products?select=*");
+  const remoteS=await sbFetch("printe_stores?select=*");
+  const remoteSales=await sbFetch("printe_sales?select=*");
+  const remoteMov=await sbFetch("printe_stock_movements?select=*");
+  // Upload local records with stable IDs. Existing remote rows are updated.
+  for(const x of db.p) await sbFetch("printe_products?on_conflict=id",{method:"POST",headers:{"Prefer":"resolution=merge-duplicates"},body:JSON.stringify({id:x.id,name:x.name,peso:x.peso,tempo:x.tempo,acab:x.acab,acc:x.acc,estoque:x.estoque,sku:x.sku||"",obs:x.obs||""})});
+  for(const x of db.stores) await sbFetch("printe_stores?on_conflict=id",{method:"POST",headers:{"Prefer":"resolution=merge-duplicates"},body:JSON.stringify({id:x.id,name:x.name,contact:x.contact||"",obs:x.obs||""})});
+  for(const x of db.s) await sbFetch("printe_sales?on_conflict=id",{method:"POST",headers:{"Prefer":"resolution=merge-duplicates"},body:JSON.stringify({id:x.id||Date.now()+Math.random(),date:x.date,name:x.name,pid:x.pid,q:x.q,total:x.total,lucro:x.lucro,type:x.type||"",store:x.store?Number(x.store):null})});
+  for(const x of db.m) await sbFetch("printe_stock_movements?on_conflict=id",{method:"POST",headers:{"Prefer":"resolution=merge-duplicates"},body:JSON.stringify({id:x.id||Date.now()+Math.random(),date:x.date,pid:x.pid,type:x.type,q:x.q,reason:x.reason||""})});
+  // Pull cloud and merge by IDs, favoring cloud for existing rows.
+  const pp=await sbFetch("printe_products?select=*"); const ss=await sbFetch("printe_stores?select=*");
+  const sal=await sbFetch("printe_sales?select=*"); const mov=await sbFetch("printe_stock_movements?select=*");
+  if(pp?.length) db.p=pp.map(x=>({id:Number(x.id),name:x.name,peso:+x.peso,tempo:+x.tempo,acab:+x.acab,acc:+x.acc,estoque:+x.estoque,sku:x.sku||"",obs:x.obs||""}));
+  if(ss?.length) db.stores=ss.map(x=>({id:Number(x.id),name:x.name,contact:x.contact||"",obs:x.obs||""}));
+  if(sal?.length) db.s=sal.map(x=>({id:Number(x.id),date:x.date,name:x.name,pid:Number(x.pid),q:+x.q,total:+x.total,lucro:+x.lucro,type:x.type,store:x.store}));
+  if(mov?.length) db.m=mov.map(x=>({id:Number(x.id),date:x.date,pid:Number(x.pid),type:x.type,q:+x.q,reason:x.reason||""}));
+  save();$("cloudStatus").textContent="✅ Sincronização concluída em "+new Date().toLocaleString("pt-BR");
+ }catch(e){$("cloudStatus").textContent="❌ Erro na sincronização: "+e.message.slice(0,220);}
+}
+
 function render(){
- renderConfig();renderSelects();renderCatalog();renderStock();renderSales();renderStores();renderReports();
+ renderConfig();renderCloud();renderSelects();renderCatalog();renderStock();renderSales();renderStores();renderReports();
  $("mp").textContent=db.p.length;$("me").textContent=db.p.reduce((a,p)=>a+p.estoque,0);
  $("mf").textContent=money(db.s.reduce((a,s)=>a+s.total,0));$("ml").textContent=money(db.s.reduce((a,s)=>a+s.lucro,0));
 }
