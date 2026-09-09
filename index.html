@@ -1,0 +1,58 @@
+<!doctype html><html lang="pt-BR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PRINTÊ Manager"><title>PRINTÊ Manager</title>
+<style>
+:root{--bg:#f5f5f5;--card:#fff;--text:#161616;--muted:#707070;--accent:#ff6b8a;--line:#e7e7e7}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.app{max-width:900px;margin:auto;min-height:100vh;padding-bottom:60px}header{padding:24px 18px;background:#111;color:#fff}
+.brand{font-size:25px;font-weight:800}.brand span{color:var(--accent)}header small{color:#bbb}
+nav{display:flex;gap:7px;padding:9px;background:#fff;position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line);overflow:auto}
+nav button{border:0;background:#eee;padding:10px 12px;border-radius:12px;white-space:nowrap;font-weight:700}nav button.active{background:#111;color:#fff}
+main{padding:16px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:15px}
+.metric{font-size:23px;font-weight:800;margin-top:4px}.muted{color:var(--muted);font-size:13px}
+h2{font-size:21px}h3{margin:0 0 12px}label{display:block;font-size:13px;font-weight:700;margin:11px 0 5px}
+input,select{width:100%;padding:11px;border:1px solid #d7d7d7;border-radius:10px;background:#fff;font-size:16px}
+.row{display:flex;gap:9px}.row>*{flex:1}.primary{border:0;background:#111;color:#fff;padding:12px 15px;border-radius:11px;font-weight:800;margin-top:14px}
+.price{font-size:28px;font-weight:900;margin-top:7px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line)}
+th{font-size:10px;text-transform:uppercase;color:#777}.hidden{display:none}
+@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}}
+</style></head><body><div class="app">
+<header><div class="brand">PRINT<span>Ê</span> Manager</div><small>Precificação • Produtos • Vendas • Estoque</small></header>
+<nav id="nav"><button class="active" data-tab="inicio">Início</button><button data-tab="produto">Novo produto</button><button data-tab="catalogo">Catálogo</button><button data-tab="vendas">Vendas</button><button data-tab="estoque">Estoque</button><button data-tab="config">Config.</button></nav>
+<main>
+<section id="inicio"><h2>Painel</h2><div class="grid">
+<div class="card"><div class="muted">Produtos</div><div id="mp" class="metric">0</div></div><div class="card"><div class="muted">Estoque</div><div id="me" class="metric">0</div></div><div class="card"><div class="muted">Faturamento</div><div id="mf" class="metric">R$ 0,00</div></div><div class="card"><div class="muted">Lucro</div><div id="ml" class="metric">R$ 0,00</div></div></div>
+<div class="card" style="margin-top:12px"><h3>Precificação rápida</h3><div class="row"><div><label>Peso (g)</label><input id="qp" type="number" step=".01"></div><div><label>Impressão (min)</label><input id="qt" type="number"></div></div>
+<div class="row"><div><label>Acabamento (min)</label><input id="qa" type="number" value="3"></div><div><label>Acessórios (R$)</label><input id="qx" type="number" step=".01" value="0"></div></div>
+<label>Modalidade</label><select id="qtipo"><option value="direta">Venda direta</option><option value="atacado">Atacado</option><option value="consig">Consignação</option></select>
+<div id="qpreco" class="price">R$ 0,00</div><button class="primary" onclick="quick()">Calcular preço</button></div></section>
+
+<section id="produto" class="hidden"><h2>Novo produto</h2><div class="card"><label>Nome</label><input id="pn" placeholder="Ex.: Chaveiro Akatsuki">
+<div class="row"><div><label>Peso (g)</label><input id="pp" type="number" step=".01"></div><div><label>Impressão (min)</label><input id="pt" type="number"></div></div>
+<div class="row"><div><label>Acabamento (min)</label><input id="pa" type="number" value="3"></div><div><label>Acessórios (R$)</label><input id="px" type="number" step=".01" value="0"></div></div>
+<label>Estoque inicial</label><input id="pe" type="number" value="0"><button class="primary" onclick="add()">Salvar produto</button></div></section>
+
+<section id="catalogo" class="hidden"><h2>Catálogo</h2><div class="card"><table><thead><tr><th>Produto</th><th>Custo</th><th>Direta</th><th>Consig.</th><th>Estoque</th></tr></thead><tbody id="cat"></tbody></table></div></section>
+<section id="vendas" class="hidden"><h2>Registrar venda</h2><div class="card"><label>Produto</label><select id="vp"></select><div class="row"><div><label>Quantidade</label><input id="vq" type="number" value="1" min="1"></div><div><label>Modalidade</label><select id="vt"><option value="direta">Direta</option><option value="atacado">Atacado</option><option value="consig">Consignação</option></select></div></div><button class="primary" onclick="sale()">Registrar venda</button></div>
+<div class="card" style="margin-top:12px"><h3>Histórico</h3><table><thead><tr><th>Data</th><th>Produto</th><th>Qtd.</th><th>Total</th><th>Lucro</th></tr></thead><tbody id="hist"></tbody></table></div></section>
+<section id="estoque" class="hidden"><h2>Estoque</h2><div class="card"><table><thead><tr><th>Produto</th><th>Qtd.</th><th>Custo/un.</th><th>Valor</th></tr></thead><tbody id="stk"></tbody></table></div></section>
+<section id="config" class="hidden"><h2>Configurações</h2><div class="card" id="cfg"></div></section>
+</main></div>
+<script>
+const K="printe_manager_v1",M=v=>new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v||0);
+let db=JSON.parse(localStorage.getItem(K)||"null")||{c:{fil:130,w:350,e:1.061,a1:5100,vida:3000,mao:20,man:5,com:30,marg:40},p:[],s:[]};
+function save(){localStorage.setItem(K,JSON.stringify(db));render()}
+function cost(p){let c=db.c,dep=c.a1/c.vida;let direct=p.peso*c.fil/1000+p.tempo/60*(c.w/1000)*c.e+p.tempo/60*dep+(p.acc||0);return (direct+p.acab/60*c.mao)*(1+c.man/100)}
+function price(p,t){let c=db.c,x=cost(p);if(t=="consig")return x/(1-c.com/100-c.marg/100);if(t=="atacado")return x/(1-.15-c.marg/100);return x/(1-c.marg/100)}
+function quick(){let p={peso:+qp.value,tempo:+qt.value,acab:+qa.value,acc:+qx.value};qpreco.textContent=M(price(p,qtipo.value))}
+function add(){let n=pn.value.trim();if(!n)return alert("Informe o nome.");let p={id:Date.now(),name:n,peso:+pp.value,tempo:+pt.value,acab:+pa.value||0,acc:+px.value||0,estoque:+pe.value||0};db.p.push(p);save();pn.value="";alert("Produto salvo.")}
+function sale(){let p=db.p.find(x=>x.id==vp.value),q=Math.max(1,+vq.value||1),t=vt.value;if(!p)return;if(p.estoque<q)return alert("Estoque insuficiente.");let u=price(p,t),com=t=="consig"?db.c.com/100:0,profit=(u*(1-com)-cost(p))*q;p.estoque-=q;db.s.unshift({d:new Date().toLocaleDateString("pt-BR"),n:p.name,q,total:u*q,l:profit});save()}
+function cfg(){let c=db.c;document.getElementById("cfg").innerHTML=[["Filamento (R$/kg)","fil",c.fil],["A1 (W)","w",c.w],["Energia (R$/kWh)","e",c.e],["A1 (R$)","a1",c.a1],["Vida econômica (h)","vida",c.vida],["Mão de obra (R$/h)","mao",c.mao],["Manutenção (%)","man",c.man],["Comissão (%)","com",c.com],["Margem alvo (%)","marg",c.marg]].map(x=>`<label>${x[0]}</label><input id="c_${x[1]}" type="number" step=".001" value="${x[2]}">`).join("")+'<button class="primary" onclick="saveCfg()">Salvar configurações</button>'}
+function saveCfg(){let c={};["fil","w","e","a1","vida","mao","man","com","marg"].forEach(k=>c[k]=+document.getElementById("c_"+k).value);db.c=c;save();alert("Configurações salvas.")}
+function render(){cfg();mp.textContent=db.p.length;me.textContent=db.p.reduce((a,p)=>a+p.estoque,0);mf.textContent=M(db.s.reduce((a,x)=>a+x.total,0));ml.textContent=M(db.s.reduce((a,x)=>a+x.l,0));
+cat.innerHTML=db.p.map(p=>`<tr><td>${p.name}</td><td>${M(cost(p))}</td><td>${M(price(p,"direta"))}</td><td>${M(price(p,"consig"))}</td><td>${p.estoque}</td></tr>`).join("")||'<tr><td colspan="5">Nenhum produto.</td></tr>';
+vp.innerHTML=db.p.map(p=>`<option value="${p.id}">${p.name}</option>`).join("");hist.innerHTML=db.s.map(s=>`<tr><td>${s.d}</td><td>${s.n}</td><td>${s.q}</td><td>${M(s.total)}</td><td>${M(s.l)}</td></tr>`).join("")||'<tr><td colspan="5">Nenhuma venda.</td></tr>';
+stk.innerHTML=db.p.map(p=>`<tr><td>${p.name}</td><td>${p.estoque}</td><td>${M(cost(p))}</td><td>${M(cost(p)*p.estoque)}</td></tr>`).join("")||'<tr><td colspan="4">Nenhum produto.</td></tr>'}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));document.getElementById(b.dataset.tab).classList.remove("hidden");b.classList.add("active")});render();
+</script></body></html>
